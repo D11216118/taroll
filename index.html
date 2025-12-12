@@ -956,6 +956,9 @@
             }
         ];
 
+        // ===== 常數設定 =====
+        const UPRIGHT_PROBABILITY = 0.5; // 正位機率（50%）
+
         // ===== 核心函數 =====
 
         /**
@@ -984,8 +987,8 @@
                 // 隨機選擇一張牌
                 const card = TAROT_CARDS[randomInt(TAROT_CARDS.length)];
 
-                // 隨機決定正位或逆位（50/50）
-                const isUpright = Math.random() < 0.5;
+                // 隨機決定正位或逆位（使用設定的機率）
+                const isUpright = Math.random() < UPRIGHT_PROBABILITY;
                 const orientation = isUpright ? "upright" : "reversed";
 
                 // 取得問題
@@ -1053,8 +1056,13 @@
             const resultSection = document.getElementById('resultSection');
             resultSection.classList.add('show');
 
-            // 滾動到結果區
-            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // 滾動到結果區（加入錯誤處理）
+            try {
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch (error) {
+                // 若瀏覽器不支援，則使用基本的滾動
+                resultSection.scrollIntoView();
+            }
         }
 
         /**
@@ -1100,8 +1108,8 @@
                 console.warn(`警告：牌庫應包含 78 張牌，目前有 ${TAROT_CARDS.length} 張`);
             }
 
-            // 可選：Enter 鍵觸發抽牌
-            document.getElementById('questionInput').addEventListener('keypress', function(e) {
+            // 可選：Enter 鍵觸發抽牌（使用 keydown 提升相容性）
+            document.getElementById('questionInput').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     drawCard();
